@@ -10,3 +10,4 @@ xgboost
 imbalanced-learn
 fastapi
 uvicorn
+pytest

@@ -84,7 +84,7 @@ def predict(transaction: Transaction):
     """
     # --- Convertir la requête en DataFrame ---
     # .dict() transforme l'objet Pydantic en dictionnaire Python
-    data = pd.DataFrame([transaction.dict()])
+    data = pd.DataFrame([transaction.model_dump()])
 
     # --- Appliquer la MÊME transformation que pendant l'entraînement ---
     # C'est un point critique : si on oublie cette étape, le modèle
