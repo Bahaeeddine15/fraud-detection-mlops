@@ -1,0 +1,28 @@
+# Environnement virtuel
+.venv/
+venv/
+
+# Données (trop volumineuses pour Git, et pas nécessaire de les versionner)
+data/
+*.csv
+
+# Artefacts de modèle (générés par le code, pas à committer tels quels
+# pour l'instant — on pourra revoir ça avec un vrai registre de modèles
+# plus tard, mais pour un projet portfolio, les régénérer via le
+# pipeline est plus propre)
+*.joblib
+
+# MLflow
+mlruns/
+mlflow.db
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Éditeurs / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

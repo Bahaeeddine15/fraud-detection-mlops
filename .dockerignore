@@ -1,0 +1,13 @@
+# Ne pas copier ces fichiers/dossiers dans l'image — ils sont inutiles
+# à l'API et alourdiraient l'image pour rien.
+data/
+mlruns/
+mlflow.db
+*.csv
+.venv/
+venv/
+__pycache__/
+*.pyc
+.git/
+.ipynb_checkpoints/
+*.ipynb
