@@ -1,21 +1,10 @@
-# pandas 
-# numpy 
-# scikit-learn 
-# matplotlib 
-# seaborn 
-# jupyter 
-# xgboost 
-# mlflow
-# xgboost
-# imbalanced-learn
-# fastapi
-# uvicorn
-# pytest
-
 fastapi==0.115.0
 uvicorn[standard]==0.32.0
 pydantic==2.9.2
 pandas==2.2.3
+numpy==2.1.3
 scikit-learn==1.5.2
 xgboost==2.1.1
 joblib==1.4.2
+pytest==8.3.3
+httpx==0.27.2

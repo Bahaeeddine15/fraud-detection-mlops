@@ -34,8 +34,14 @@ pipeline {
                 }
             }
             steps {
+                // On crée un environnement virtuel DANS le workspace
+                // (toujours accessible en écriture, contrairement au
+                // dossier home de l'utilisateur du conteneur éphémère,
+                // qui a causé l'erreur "Permission denied: '/.local'").
                 sh '''
-                    pip install --no-cache-dir -r requirements.txt pytest
+                    python -m venv .venv
+                    . .venv/bin/activate
+                    pip install --no-cache-dir -r requirements.txt
                     pytest tests/ -v
                 '''
             }
@@ -53,7 +59,7 @@ pipeline {
                 // le script), ce stage échoue, et Jenkins n'ira PAS
                 // jusqu'au build Docker. C'est notre garde-fou F9.
                 sh '''
-                    pip install --no-cache-dir -r requirements.txt
+                    . .venv/bin/activate
                     python src/train.py
                 '''
             }
