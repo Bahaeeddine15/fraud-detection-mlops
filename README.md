@@ -134,5 +134,5 @@ L'API est déployée sur **Azure Container Apps** (région Sweden Central), via 
 ## Limites connues
 
 - Le dataset est un jeu de données public déjà largement étudié ; les métriques obtenues sont optimistes par rapport à un cas réel en production bancaire.
-- Le déploiement conditionnel (F9) compare uniquement l'AUC-PR ; une version plus avancée pourrait intégrer plusieurs métriques (recall à precision fixée, latence, etc.).
-- Pas d'authentification sur l'API ni de haute disponibilité — hors périmètre du cahier des charges initial (projet portfolio, pas un système de production réel).
+- Le déploiement conditionnel compare uniquement l'AUC-PR ; une version plus avancée pourrait intégrer plusieurs métriques (recall à precision fixée, latence, etc.).
+- Pas d'authentification sur l'API ni de haute disponibilité (future implémentation).
