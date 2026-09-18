@@ -47,7 +47,7 @@ pipeline {
             }
         }
 
-        stage('Ré-entraîner le modèle') {
+        stage('Ré-entraîner le modèle (candidat)') {
             agent {
                 docker {
                     image 'python:3.11-slim'
@@ -55,9 +55,8 @@ pipeline {
                 }
             }
             steps {
-                // Si train.py échoue (AUC-PR <= 0.80, cf. exit(1) dans
-                // le script), ce stage échoue, et Jenkins n'ira PAS
-                // jusqu'au build Docker. C'est notre garde-fou F9.
+                // Si train.py échoue (AUC-PR <= 0.80, garde-fou absolu),
+                // ce stage échoue et le pipeline s'arrête ici.
                 sh '''
                     . .venv/bin/activate
                     python src/train.py
@@ -65,10 +64,40 @@ pipeline {
             }
         }
 
+        stage('Comparer et promouvoir (F9)') {
+            agent {
+                docker {
+                    image 'python:3.11-slim'
+                    reuseNode true
+                }
+            }
+            steps {
+                script {
+                    // returnStatus: true capture le code de sortie SANS
+                    // faire échouer le stage — on veut décider nous-mêmes
+                    // quoi faire si le candidat est rejeté (pas planter
+                    // le pipeline, juste sauter les stages suivants).
+                    def exitCode = sh(
+                        script: '''
+                            . .venv/bin/activate
+                            python src/compare_and_promote.py
+                        ''',
+                        returnStatus: true
+                    )
+                    // Variable d'environnement lue par les stages suivants
+                    // via leur condition "when".
+                    env.PROMOTED = (exitCode == 0) ? "true" : "false"
+                }
+            }
+        }
+
         stage('Construire l\'image Docker') {
-            // Retour sur l'agent Jenkins directement (pas un conteneur
-            // éphémère), car c'est LUI qui a accès au socket Docker
-            // de la machine hôte pour lancer "docker build".
+            // Ne s'exécute QUE si le candidat a été promu à l'étape
+            // précédente. C'est le coeur de F9 : pas de nouveau build/
+            // déploiement si le modèle n'est pas meilleur que la prod.
+            when {
+                environment name: 'PROMOTED', value: 'true'
+            }
             steps {
                 sh 'docker build -t fraude-api:${BUILD_NUMBER} .'
                 sh 'docker tag fraude-api:${BUILD_NUMBER} fraude-api:latest'

@@ -11,6 +11,9 @@ data/
 # plus tard, mais pour un projet portfolio, les régénérer via le
 # pipeline est plus propre)
 *.joblib
+candidate_*.joblib
+candidate_metrics.json
+production_metrics.json
 
 # MLflow
 mlruns/
@@ -26,5 +29,4 @@ __pycache__/
 .idea/
 .DS_Store
 Thumbs.db
-
-.sf/
+.sf

@@ -11,6 +11,7 @@ est relatif à la racine)
 """
 
 import joblib
+import json
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -89,21 +90,34 @@ def main():
     print(f"Seuil optimal (F1 max) : {threshold:.4f}")
 
     # --- Critère de succès du cahier des charges : AUC-PR > 0.80 ---
-    # exit(1) fait échouer le script avec un code d'erreur non-nul.
-    # C'est ce signal que Jenkins utilisera plus tard pour décider
-    # d'arrêter le pipeline si le modèle ne passe pas la barre (F9).
+    # C'est un garde-fou absolu (le modèle ne doit jamais être pire que
+    # ce seuil minimal), en plus de la comparaison relative à la
+    # version en production qu'on fait dans un stage séparé (F9).
     if auc_pr <= 0.80:
         print("ÉCHEC : AUC-PR en dessous du seuil requis de 0.80")
         exit(1)
 
-    print("\nSauvegarde des artefacts...")
-    joblib.dump(model, "model.joblib")
-    joblib.dump(scaler, "scaler.joblib")
-    joblib.dump(X_train.columns.tolist(), "feature_columns.joblib")
-    joblib.dump(threshold, "threshold.joblib")
+    print("\nSauvegarde des artefacts CANDIDATS (pas encore en production)...")
+    # Préfixe "candidate_" : ce modèle vient d'être entraîné mais n'est
+    # pas encore celui qui sert les vraies requêtes. Un stage séparé
+    # (compare_and_promote.py) décidera s'il remplace la version en prod.
+    joblib.dump(model, "candidate_model.joblib")
+    joblib.dump(scaler, "candidate_scaler.joblib")
+    joblib.dump(X_train.columns.tolist(), "candidate_feature_columns.joblib")
+    joblib.dump(threshold, "candidate_threshold.joblib")
 
-    print("Terminé. Artefacts sauvegardés : model.joblib, scaler.joblib, "
-          "feature_columns.joblib, threshold.joblib")
+    baseline_stats = {
+        "mean": X_train.mean().to_dict(),
+        "std": X_train.std().to_dict(),
+    }
+    joblib.dump(baseline_stats, "candidate_baseline_stats.joblib")
+
+    # --- Métriques du candidat, utilisées pour la comparaison F9 ---
+    with open("candidate_metrics.json", "w") as f:
+        json.dump({"auc_pr": auc_pr, "threshold": threshold}, f, indent=2)
+
+    print("Terminé. Artefacts candidats sauvegardés (préfixe candidate_) "
+          "+ candidate_metrics.json")
 
 
 if __name__ == "__main__":
