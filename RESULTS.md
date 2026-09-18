@@ -63,5 +63,5 @@ Les 3 modèles ont été trackés avec MLflow (hyperparamètres, AUC-PR, artefac
 
 - **Dataset public déjà largement étudié** : les performances mesurées sont probablement optimistes par rapport à un déploiement sur des données bancaires réelles, dont la distribution évolue dans le temps (contrairement à ce jeu de données statique).
 - **SMOTE n'a pas amélioré les résultats** ici, mais pourrait se comporter différemment avec un tuning plus poussé (variantes comme SMOTE-ENN, ADASYN) — non testé par manque de temps.
-- **Le déploiement conditionnel (F9)** compare uniquement l'AUC-PR ; une version plus robuste pondérerait plusieurs métriques (recall à precision fixée, latence d'inférence).
-- **Pas de test A/B ni de shadow deployment** avant promotion — le nouveau modèle remplace directement l'ancien s'il est meilleur sur le test set, sans validation sur du trafic réel (hors périmètre pour un projet portfolio).
+- **Le déploiement conditionnel** compare uniquement l'AUC-PR ; une version plus robuste pondérerait plusieurs métriques (recall à precision fixée, latence d'inférence).
+- **Pas de test A/B ni de shadow deployment** avant promotion — le nouveau modèle remplace directement l'ancien s'il est meilleur sur le test set, sans validation sur du trafic réel.
